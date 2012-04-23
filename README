@@ -1,0 +1,28 @@
+Claymore v0.0.0.0.1a
+
+DISCLAIMER: This script is craptacular. It may work well, it may kill
+you, kill your family, and do unspeakable things to your network. It
+may not work at all!
+
+It's fairly basic. All the configuration for the AP and DHCP should be 
+done by you. All the script does is monitor your logfile for DHCPACK 
+events.
+
+I would suggest you not run this on a production DHCP server. 
+
+Config stuff is in claymore.ini.dist -- Edit this file, save the valid 
+config as claymore.ini it will not work without it.
+
+Assumes you have python-daemon and python-nmap installed
+
+Also assumes you've installed it in /opt/claymore, if it's somewhere else, 
+change the claymore.ini path given to the claymore() function in 
+claymored.py
+
+to run: python claymored.py
+
+It will detatch and run as a daemon.
+
+Need help? Shoot me a message at @innismir or bbj@mayhemiclabs.com
+
+Good luck! 
