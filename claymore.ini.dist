@@ -1,0 +1,15 @@
+[system]
+log_file = '/var/log/syslog'
+
+[mail]
+server_address = your.server.name.here
+server_port = 25
+
+to_name = your.name.here
+to_address = your.address.to.recieve.alerts.here
+
+from_name = Claymore Daemon
+from_address = claymore@mayhemiclabs.com
+
+server_login_user = mail.server.login.here
+server_login_password  = mail.server.pass.here
