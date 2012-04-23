@@ -62,6 +62,8 @@ def send_email(text):
 
 def claymore(configfile='/opt/claymore/claymore.ini'):
 
+	syslog.openlog("claymored", 0, syslog.LOG_AUTH)
+
 	syslog.syslog('Claymore Daemon Starting...')
 
 	global config
@@ -78,8 +80,9 @@ def claymore(configfile='/opt/claymore/claymore.ini'):
 	st_size = st_results[6]
 	file.seek(st_size)
 
+	syslog.syslog('Claymore Daemon Ready!')
+
 	while 1:
-		syslog.syslog('Claymore Daemon Ready!')
 
 		where = file.tell()
 		line = file.readline()
@@ -91,6 +94,7 @@ def claymore(configfile='/opt/claymore/claymore.ini'):
 				report = 'Claymore Detonated! - ' + line + "\n\n"
  				report += scan_ip(result.group(1))
 				send_email(report)
+				syslog.syslog('Claymore Detonanted!')
 		else:
 			time.sleep(1)
 			file.seek(where)
