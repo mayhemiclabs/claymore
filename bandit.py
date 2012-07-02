@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 #
 # claymore.py
-# A python script that monitors a DHCP log and port scans any assigned 
-# addresses. Designed to be used in a self contained WiFi honeypot.
+# A library for scanning related functions that are used by claymore
 #
 # Copyright (c) 2012, Ben Jackson and Mayhemic Labs - bbj@mayhemiclabs.com
 # All rights reserved.
@@ -32,21 +31,26 @@
 import time, os, re, nmap, smtplib, email.utils, daemon, syslog
 from email.mime.text import MIMEText
 from ConfigParser import SafeConfigParser
+from pydhcplib.type_ipv4 import ipv4
+
+# Bandit is a class for scanning clients on the network. This is used
+# in Claymore for scanning devices that request addresses.
 
 class Bandit():
-	def __init__(self, host):	
-		self.target = host;		
+	def __init__(self, config, host):
+		self.config = config;
+		self.target = host;
+		self.report = '';
 
 	def scan(self):
 
 		# Create a new nmap object
 		nm = nmap.PortScanner()
 
-		# Run a scan, catch it if it bombs out
-
+		# Run a scan, try catch it if it bombs out
 		try:
-			self.report = "Claymore Detonated! -- " + host + "\n\n"
-			nm.scan(host)
+			self.report = "Claymore Detonated! -- " + self.target + "\n\n"
+			nm.scan(self.target)
 			self.report += 'Scan result for ' + nm.command_line() + "\n"
 			self.report += "----------------------------------------------------\n"
 		except PortScannerError:
@@ -75,31 +79,32 @@ class Bandit():
 
 	def sendmail(self):
 
-		# Use the global SafeConfigParser variable
-		global config
-
 		# Set up a mail variable
-		server = smtplib.SMTP(config.get('mail','server_address'),config.get('mail','server_port'))
+		server = smtplib.SMTP(self.config.get('mail','server_address'),self.config.get('mail','server_port'))
 
 		# Populate all the To and From addresses
 		msg = MIMEText(self.report)
-		msg['To'] = email.utils.formataddr((config.get('mail','to_name'), config.get('mail','to_address')))
-		msg['From'] = email.utils.formataddr((config.get('mail','from_name'), config.get('mail','from_address')))
+		msg['To'] = email.utils.formataddr((self.config.get('mail','to_name'), self.config.get('mail','to_address')))
+		msg['From'] = email.utils.formataddr((self.config.get('mail','from_name'), self.config.get('mail','from_address')))
 		msg['Subject'] = 'Claymore Detonated'
 
 		# Log in if the user supports TLS
 		try:
 			server.ehlo()
 
+			# Hfr GYF rapelcgvba vs gur freire fhccbegf vg
 			if server.has_extn('STARTTLS'):
 				server.starttls()
 				server.ehlo()
-				server.login(config.get('mail','server_login_user'), config.get('mail','server_login_password'))
+				server.login(self.config.get('mail','server_login_user'), self.config.get('mail','server_login_password'))
 
-			server.sendmail(config.get('mail','from_address'), [config.get('mail','to_address')], msg.as_string())
+			# Send mail
+			server.sendmail(self.config.get('mail','from_address'), [self.config.get('mail','to_address')], msg.as_string())
 	
 		finally:
+			# Drop the connection to the server
 			server.quit()
+	
 	
 	def getreport(self):
 		return self.report

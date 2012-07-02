@@ -89,7 +89,7 @@ class Server(DhcpServer):
 			c.execute('SELECT MAX(address) FROM addresses')
 			address = c.fetchone()[0]
 
-			if (address > ipv4(self.config.get('dhcpoptions','dhcp_pool_start')).int()):
+			if (address >= ipv4(self.config.get('dhcpoptions','dhcp_pool_start')).int()):
 				address = address + 1
 			else:
 				address = ipv4(self.config.get('dhcpoptions','dhcp_pool_start')).int()
