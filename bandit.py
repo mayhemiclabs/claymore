@@ -45,8 +45,8 @@ class Bandit():
 		# Run a scan, catch it if it bombs out
 
 		try:
-			self.report = "Claymore Detonated! -- " + host + "\n\n"
-			nm.scan(host)
+			self.report = "Claymore Detonated! -- " + self.target + "\n\n"
+			nm.scan(self.target)
 			self.report += 'Scan result for ' + nm.command_line() + "\n"
 			self.report += "----------------------------------------------------\n"
 		except PortScannerError:

@@ -18,6 +18,8 @@ def claymore(configfile='/opt/claymore/claymore.ini'):
 	filename = config.get('system','log_file').strip("'")
 	file = open(filename,'r')
 
+	syslog.syslog('Claymore monitoring for DHCP ACKs')
+
 	dhcp = re.compile("DHCPACK on (\d+\.\d+\.\d+\.\d+) to .+")
 
 	st_results = os.stat(filename)
